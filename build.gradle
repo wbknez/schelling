@@ -1,0 +1,65 @@
+apply plugin: "idea"
+apply plugin: "java"
+apply plugin: "application"
+
+ext {
+
+    // Dependency versions.
+    hamcrestVersion     = "1.3"
+    iTextVersion        = "5.5.7"
+    jfChartVersion      = "1.0.19"
+    junitVersion        = "4.12"
+    masonVersion        = "19"
+
+    // Dependencies.
+    libraries = [
+            hamcrest    : "org.hamcrest:hamcrest-core:$hamcrestVersion",
+            iText       : "com.itextpdf:itextpdf:$iTextVersion",
+            jfChart     : "org.jfree:jfreechart:$jfChartVersion",
+            junit       : "junit:junit:$junitVersion",
+            mason       : "fr.irit.smac.thirdparty.edu.gmu.cs:mason:$masonVersion"
+    ]
+}
+
+mainClassName =  ext.groupName + "." + ext.artifactName + ".AppEntry"
+sourceCompatibility = ext.javaSourceVersion
+targetCompatibility = ext.javaTargetVersion
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile libraries.mason
+
+    testCompile libraries.hamcrest
+    testCompile libraries.junit
+}
+
+/**
+ * Create a "fat", or dependency-filled, executable jar for distribution.
+ *
+ * This mimics the manifest output of Maven's JAR and Assembly plugins.
+ */
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Specification-Title'     : rootProject.name,
+                'Specification-Version'   : rootProject.version,
+                'Specification-Vendor'    : rootProject.projectVendor,
+                'Implementation-Title'    : rootProject.name,
+                'Implementation-Version'  : rootProject.version,
+                'Implementation-Vendor-Id': rootProject.group,
+                'Implementation-Vendor'   : rootProject.projectVendor,
+                'Implementation-URL'      : rootProject.projectUrl,
+                'Main-Class'              : mainClassName
+    }
+
+    baseName = rootProject.artifactName
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}
