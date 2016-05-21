@@ -25,7 +25,7 @@ import java.util.Arrays;
  * Represents a categorical association that agents may belong to in a
  * Schelling-based segregation simulation.
  */
-public strictfp class Group {
+public /* strictfp */ class Group {
 
     /**
      * The color that an agent of this group is drawn as when it is happy, or
