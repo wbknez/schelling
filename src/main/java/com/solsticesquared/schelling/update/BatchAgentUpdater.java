@@ -23,7 +23,8 @@ import com.solsticesquared.schelling.move.MovementMethod;
 import java.util.ArrayList;
 
 /**
- * Represents an implementation of an {@link AgentUpdater} that
+ * Represents an implementation of an {@link AgentUpdater} that updates the
+ * location(s) of as many agents as possible.
  */
 public class BatchAgentUpdater implements AgentUpdater {
 
@@ -46,5 +47,8 @@ public class BatchAgentUpdater implements AgentUpdater {
         while(agents.size() >= moveMethod.getMinimumNumberOfAgentsRequired()) {
             moveMethod.move(agents, model);
         }
+
+        // Clear the list.
+        agents.clear();
     }
 }
