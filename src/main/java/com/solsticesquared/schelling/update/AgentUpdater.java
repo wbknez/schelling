@@ -31,6 +31,7 @@ import com.solsticesquared.schelling.move.MovementMethod;
  *     but that is its intended purpose.
  * </p>
  */
+@FunctionalInterface
 public interface AgentUpdater {
 
     /**

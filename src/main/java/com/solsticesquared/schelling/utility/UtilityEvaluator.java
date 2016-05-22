@@ -23,6 +23,7 @@ import com.solsticesquared.schelling.SchellingExplorer;
  * Represents a mechanism for computing the "happiness" of an arbitrary agent
  * with her current neighborhood.
  */
+@FunctionalInterface
 public interface UtilityEvaluator {
 
     /**
