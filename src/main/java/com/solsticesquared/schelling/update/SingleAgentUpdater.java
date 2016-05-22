@@ -24,9 +24,9 @@ import java.util.ArrayList;
 
 /**
  * Represents an implementation of an {@link AgentUpdater} that updates the
- * location(s) of as many agents as possible.
+ * location(s) of a single agent, or group of agents, at a time.
  */
-public class BatchAgentUpdater implements AgentUpdater {
+public class SingleAgentUpdater implements AgentUpdater {
 
     @Override
     public void update(final MovementMethod moveMethod,
@@ -44,7 +44,7 @@ public class BatchAgentUpdater implements AgentUpdater {
 
         // Ensure that the number of agents that the movement logic requires
         // to be present exist.
-        while(agents.size() >= moveMethod.getMinimumNumberOfAgentsRequired()) {
+        if(agents.size() >= moveMethod.getMinimumNumberOfAgentsRequired()) {
             moveMethod.move(agents, model);
         }
 
