@@ -24,7 +24,7 @@ import com.solsticesquared.schelling.SchellingExplorer.Constants;
 import sim.field.grid.IntGrid2D;
 
 /**
- * Represents an implementation of a {@link RelativeUtilityEvaluator} that
+ * Represents an implementation of a {@link UtilityEvaluator} that
  * computes the "happiness" of an arbitrary agent with her current
  * neighborhood based on the number of available surrounding neighbors.
  *
