@@ -71,8 +71,8 @@ public class RelativeUtilityEvaluator implements UtilityEvaluator {
         // Obtain the current neighborhood.
         simulSpace.getMooreLocations(agent.getXLocation(),
                                      agent.getYLocation(),
-                                     model.getSearchRadius(),
-                                     model.getBoundsType(),
+                                     model.getRuleset().getSearchRadius(),
+                                     model.getRuleset().getBoundsType(),
                                      false,
                                      cache.xLocations, cache.yLocations);
 
