@@ -246,7 +246,10 @@ public /* strictfp */ class Agent implements Steppable {
         // #1) Evaluate the current neighborhood.
         final UtilityEvaluator evaluator =
                 model.getRuleset().getUtilityEvaluator();
-        final double currentEvaluation = evaluator.evaluate(this, model);
+        final double currentEvaluation = evaluator.evaluate(this,
+                                                            this.location.x,
+                                                            this.location.y,
+                                                            model);
 
         // #2) Update current state.
         this.updateState(currentEvaluation);
