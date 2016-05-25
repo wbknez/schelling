@@ -393,7 +393,7 @@ public /* strictfp */ class Parameters {
     }
 
     /**
-     * Returns the simulation dynamics used by a simulation.
+     * Returns the dynamics used by a simulation.
      *
      * @return The simulation dynamics.
      */
