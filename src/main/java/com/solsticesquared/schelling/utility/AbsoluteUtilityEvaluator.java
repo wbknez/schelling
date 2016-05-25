@@ -57,7 +57,8 @@ import sim.field.grid.IntGrid2D;
 public class AbsoluteUtilityEvaluator implements UtilityEvaluator {
 
     @Override
-    public double evaluate(Agent agent, SchellingExplorer model) {
+    public double evaluate(final Agent agent, final int x, final int y,
+                           final SchellingExplorer model) {
         if(agent == null) {
             throw new NullPointerException();
         }
@@ -72,8 +73,8 @@ public class AbsoluteUtilityEvaluator implements UtilityEvaluator {
         final IntGrid2D simulSpace = model.getSimulationSpace();
 
         // Obtain the current neighborhood.
-        simulSpace.getMooreLocations(agent.getXLocation(),
-                                     agent.getYLocation(),
+        simulSpace.getMooreLocations(x,
+                                     y,
                                      model.getRuleset().getSearchRadius(),
                                      model.getRuleset().getBoundsType(),
                                      false,

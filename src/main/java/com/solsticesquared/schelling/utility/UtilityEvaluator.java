@@ -21,17 +21,21 @@ import com.solsticesquared.schelling.SchellingExplorer;
 
 /**
  * Represents a mechanism for computing the "happiness" of an arbitrary agent
- * with her current neighborhood.
+ * with an arbitrary neighborhood.
  */
 @FunctionalInterface
 public interface UtilityEvaluator {
 
     /**
-     * Computes the "happiness" of the specified agent with her current
+     * Computes the "happiness" of the specified agent with the specified
      * neighborhood according to some arbitrary logic.
      *
      * @param agent
-     *        The agent whose neighborhood needs to be evaluated.
+     *        The agent who is evaluating the neighborhood.
+     * @param x
+     *        The x-axis coordinate of the neighborhood to evaluate.
+     * @param y
+     *        The y-axis coordinate of the neighborhood to evaluate.
      * @param model
      *        The model to use.
      * @return The percentage of same-group neighbors (relative to an agent)
@@ -39,5 +43,6 @@ public interface UtilityEvaluator {
      * @throws NullPointerException
      *         If either {@code agent} or {@code model} is {@code null}.
      */
-    double evaluate(final Agent agent, final SchellingExplorer model);
+    double evaluate(final Agent agent, final int x, final int y,
+                    final SchellingExplorer model);
 }
