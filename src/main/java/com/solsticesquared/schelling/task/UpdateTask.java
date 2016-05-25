@@ -20,6 +20,8 @@ import com.solsticesquared.schelling.SchellingExplorer;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 
+import java.util.Collections;
+
 /**
  * Represents a task, implemented as a {@link Steppable}, that updates a
  * randomized collection of agents each step during a simulation.
@@ -29,6 +31,11 @@ public class UpdateTask implements Steppable {
     @Override
     public void step(SimState simState) {
         final SchellingExplorer model = (SchellingExplorer)simState;
+
+        // First, update all available agents.
         model.getAgents().step(simState);
+
+        // Second, shuffle the list of empty cells.
+        Collections.shuffle(model.getEmptyCells());
     }
 }
