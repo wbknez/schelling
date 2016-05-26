@@ -301,6 +301,15 @@ public /* strictfp */ class SchellingExplorer extends SimState {
     }
 
     /**
+     * Creates the simulation space with user-specified parameters.
+     */
+    private void createSimulationSpace() {
+        this.simulSpace = new IntGrid2D(this.parameters.getWidth(),
+                                        this.parameters.getHeight(),
+                                        Constants.EmptyCell);
+    }
+
+    /**
      * Returns the randomized collection of agents currently in this simulation.
      *
      * @return The randomized collection of agents.
@@ -504,6 +513,9 @@ public /* strictfp */ class SchellingExplorer extends SimState {
 
         // (Re)Update the "rules".
         this.ruleset.updateRules(this.parameters);
+
+        // (Re)Create the simulation space.
+        this.createSimulationSpace();
 
         // (Re)Populate the simulation space as necessary.
         this.populateGridSpace();
