@@ -520,7 +520,7 @@ public /* strictfp */ class Parameters {
      * @param emptyCells
      *        The percentage of empty space to use.
      */
-    public void setPercentOfEmptySpaces(final double emptyCells) {
+    public void setPercentOfEmptyCells(final double emptyCells) {
         if(Double.compare(emptyCells, 0.0d) < 0
            || Double.compare(emptyCells, 1.0d) > 0) {
             this.showErrorDialog("PercentOfEmptySpace", "The percentage of " +
