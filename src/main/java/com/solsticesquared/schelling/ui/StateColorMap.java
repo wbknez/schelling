@@ -104,6 +104,34 @@ public class StateColorMap extends AbstractColorMap {
     }
 
     /**
+     * Associates the state masks of the specified group with the specified
+     * group's colors for both "happy" and "unhappy" states or only the
+     * "happy" state if "unhappy" agents should not be differentiated.
+     *
+     * @param group
+     *        The group whose state masks will be mapped to their appropriate
+     *        colors for rendering.
+     * @param showUnhappyAgents
+     *        Whether or not "unhappy" agents should be shown using a
+     *        different color (per group).
+     * @throws IllegalStateException
+     *         If the state masks of {@code group} have either already been
+     *         added to this color map or are (somehow) bound to other color
+     *         values.
+     * @throws NullPointerException
+     *         If {@code group} is {@code null}.
+     */
+    public void addMapping(final Group group, final boolean showUnhappyAgents) {
+        if(group == null) {
+            throw new NullPointerException();
+        }
+
+        // Bind only the happy color but both happy and unhappy states.
+        this.addMapping(group.getHappyStateMask(), group.getHappyColor());
+        this.addMapping(group.getUnhappyStateMask(), group.getHappyColor());
+    }
+
+    /**
      * Clears all current value-color mappings in this color map.
      */
     public void clear() {
