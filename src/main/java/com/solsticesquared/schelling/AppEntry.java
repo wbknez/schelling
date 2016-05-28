@@ -16,6 +16,14 @@
 
 package com.solsticesquared.schelling;
 
+import com.solsticesquared.schelling.ui.SchellingExplorerConsole;
+import com.solsticesquared.schelling.ui.SchellingExplorerWithUi;
+import sim.display.Console;
+import sim.display.GUIState;
+import sim.engine.SimState;
+
+import javax.swing.SwingUtilities;
+
 /**
  * The main driver for the Schelling project.
  */
@@ -28,6 +36,21 @@ public final class AppEntry {
      *        The array of command line arguments, if any.
      */
     public static void main(final String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // The random number generation seed.
+            final long seed = System.currentTimeMillis();
+
+            // The underlying Schelling-based model.
+            final SimState model =
+                    SchellingExplorerUtils.createTwoGroupModel(seed);
+            // The user interface.
+            final GUIState view = new SchellingExplorerWithUi(model);
+            // The user interface controller.
+            final Console controller = new SchellingExplorerConsole(view);
+
+            // Run.
+            controller.setVisible(true);
+        });
     }
 
     /**
