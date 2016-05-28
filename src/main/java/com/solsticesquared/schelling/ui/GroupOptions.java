@@ -80,6 +80,10 @@ public class GroupOptions {
                                   PropertyField.SHOW_SLIDER);
         this.unhappyColorChooser =
                 new ChooseColorButton(group.getUnhappyColor());
+
+        // Fix dimensions so that the text field does not get lost.
+        this.popField.getField().setColumns(5);
+        this.toleranceField.getField().setColumns(5);
     }
 
     /**
