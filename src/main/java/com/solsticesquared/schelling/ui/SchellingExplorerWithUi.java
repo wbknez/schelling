@@ -160,6 +160,9 @@ public class SchellingExplorerWithUi extends GUIState {
 
         super.init(controller);
 
+        // Set the title properly.
+        this.simulFrame.setTitle("Schelling Explorer - Simulation");
+
         // Bind the controller.
         controller.registerFrame(this.simulFrame);
 
