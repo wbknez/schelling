@@ -92,6 +92,12 @@ public class SchellingExplorerWithUi extends GUIState {
                                              PropertyField.SHOW_CHECKBOX);
         this.stateColorMap = new StateColorMap();
         this.simulFrame = this.display2d.createFrame();
+
+        // Fix tooltips.
+        this.emptyColor.setToolTipText("Choose a color for the empty cells.");
+        this.showUnhappy.setToolTipText("Determine whether or not to show " +
+                                        "\"unhappy\" agents as a different " +
+                                        "color.");
     }
 
     /**

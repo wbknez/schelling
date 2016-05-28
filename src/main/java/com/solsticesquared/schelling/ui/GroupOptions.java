@@ -84,6 +84,17 @@ public class GroupOptions {
         // Fix dimensions so that the text field does not get lost.
         this.popField.getField().setColumns(5);
         this.toleranceField.getField().setColumns(5);
+
+        // Finally, set up tooltips.
+        this.happyColorChooser.setToolTipText("Choose a color for \"happy\" " +
+                                              "agents.");
+        this.nameField.setToolTipText("Input a new name for this group.");
+        this.popField.setToolTipText("Set the population percentage for " +
+                                     "this group.");
+        this.toleranceField.setToolTipText("Set the tolerance threshold for " +
+                                           "agents of this group.");
+        this.unhappyColorChooser.setToolTipText("Choose a color for " +
+                                                "\"unhappy\" agents.");
     }
 
     /**

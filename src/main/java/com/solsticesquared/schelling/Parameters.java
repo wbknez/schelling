@@ -206,6 +206,127 @@ public /* strictfp */ class Parameters {
     }
 
     /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desBoundsType() {
+        return "The type of boundary conditions to use.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desHeight() {
+        return "The height of the simulation space in cells.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desMoveChance() {
+        return "The probability that a \"happy\" agent will relocate.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desMaximumSteps() {
+        return "The maximum number of steps the simulation may execute.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desPercentOfEmptyCells() {
+        return "The percentage of cells that will start the simulation vacant.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desSearchLimit() {
+        return "The maximum number of empty cells that may be searched by an " +
+               "agent each time she looks for a new neighborhood.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desSearchRadius() {
+        return "The radius of a single agent's neighborhood in cells.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desShuffleTimes() {
+        return "The number of times to shuffle the simulation space will be " +
+               "shuffled to ensure a random starting state.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desSimulationDynamics() {
+        return "The types of over-arching dynamics present in the simulation.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desStopOnEquilibrium() {
+        return "Whether or not to stop when there are no more \"unhappy\" " +
+               "agents to move.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desUpdateType() {
+        return "The number of agents to update every simulation step.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desUtilityEvaluator() {
+        return "The method to determine an agent\'s \"happiness\" with " +
+               "her current neighborhood.";
+    }
+
+    /**
+     * Returns the description of the specified parameter.
+     *
+     * @return The description.
+     */
+    public String desWidth() {
+        return "The width of the simulation space in cells.";
+    }
+
+    /**
      * Returns the types of boundary conditions that are available.
      *
      * <p>
