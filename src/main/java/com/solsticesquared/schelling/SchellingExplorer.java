@@ -18,7 +18,6 @@ package com.solsticesquared.schelling;
 
 import com.solsticesquared.schelling.Parameters.Defaults;
 import com.solsticesquared.schelling.task.MovementTask;
-import com.solsticesquared.schelling.task.StatisticsTask;
 import com.solsticesquared.schelling.task.StopConditionTask;
 import com.solsticesquared.schelling.task.UpdateTask;
 import sim.engine.RandomSequence;
@@ -82,11 +81,8 @@ public /* strictfp */ class SchellingExplorer extends SimState {
         /** Denotes the order for an {@link UpdateTask}. */
         public static final int Update          = 2;
 
-        /** Denotes the order for a {@link StatisticsTask}. */
-        public static final int Statistics      = 3;
-
         /** Denotes the order for a {@link StopConditionTask}. */
-        public static final int StopCondition   = 4;
+        public static final int StopCondition   = 3;
 
         /**
          * Constructor (private).
@@ -253,10 +249,6 @@ public /* strictfp */ class SchellingExplorer extends SimState {
         this.schedule.scheduleRepeating(this.schedule.getTime() + 1.0,
                                         TaskOrder.Update,
                                         new UpdateTask(),
-                                        1.0);
-        this.schedule.scheduleRepeating(this.schedule.getTime() + 1.0,
-                                        TaskOrder.Statistics,
-                                        new StatisticsTask(),
                                         1.0);
         this.schedule.scheduleRepeating(this.schedule.getTime() + 1.0,
                                         TaskOrder.StopCondition,
