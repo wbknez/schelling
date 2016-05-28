@@ -19,8 +19,10 @@ package com.solsticesquared.schelling.ui;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,37 +41,43 @@ public class ChooseColorButton extends JButton {
      */
     private static class ChooseColorListener implements ActionListener {
 
-        /** The window to display the {@link JColorChooser} dialog over. */
-        private final JFrame        targetWindow;
-
-        /**
-         * Constructor.
-         *
-         * @param targetWindow
-         *        The window to display the color chooser dialog over.
-         * @throws NullPointerException
-         *         If {@code targetWindow} is {@code null}.
-         */
-        public ChooseColorListener(final JFrame targetWindow) {
-            if(targetWindow == null) {
-                throw new NullPointerException();
-            }
-
-            this.targetWindow = targetWindow;
-        }
-
         @Override
         public void actionPerformed(final ActionEvent e) {
             final ChooseColorButton colorButton =
                     (ChooseColorButton)e.getSource();
+            final Container targetWindow = this.getTargetWindow(colorButton);
             final Color newColor =
-                    JColorChooser.showDialog(this.targetWindow,
+                    JColorChooser.showDialog(targetWindow,
                                              "Choose a new color.",
                                              colorButton.getCurrentColor());
 
             if(newColor != null) {
                 colorButton.setNewColor(newColor);
             }
+        }
+
+        /**
+         * Returns the {@link JFrame} that contains the specified component
+         * for use placing dialogs.
+         *
+         * @param component
+         *        The component to obtain the containing window from.
+         * @return The {@link JFrame} that contains a component.
+         * @throws NullPointerException
+         *         If {@code component} is {@code null}.
+         */
+        private Container getTargetWindow(final JComponent component) {
+            if(component == null) {
+                throw new NullPointerException();
+            }
+
+            Container targetWindow = component.getParent();
+
+            while(!(targetWindow instanceof JFrame) && targetWindow != null) {
+                targetWindow = targetWindow.getParent();
+            }
+
+            return targetWindow;
         }
     }
 
@@ -81,22 +89,15 @@ public class ChooseColorButton extends JButton {
      *
      * @param startingColor
      *        The color to both display and initially "choose".
-     * @param targetWindow
-     *        The window to display the color chooser dialog over.
      * @throws NullPointerException
-     *         If either {@code startingColor} and {@code targetWindow} are
-     *         {@code null}.
+     *         If {@code startingColor} are {@code null}.
      */
-    public ChooseColorButton(final Color startingColor, final JFrame targetWindow) {
+    public ChooseColorButton(final Color startingColor) {
         if(startingColor == null) {
             throw new NullPointerException();
         }
 
-        if(targetWindow == null) {
-            throw new NullPointerException();
-        }
-
-        this.addActionListener(new ChooseColorListener(targetWindow));
+        this.addActionListener(new ChooseColorListener());
         this.setNewColor(startingColor);
     }
 
