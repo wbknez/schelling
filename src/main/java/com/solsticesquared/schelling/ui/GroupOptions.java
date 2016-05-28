@@ -89,13 +89,13 @@ public class GroupOptions {
      * @return A {@link LabelledList} of widgets for display.
      */
     public LabelledList createWidgetList()  {
-        final LabelledList list = new LabelledList();
+        final LabelledList list = UiUtils.createLabelledList();
 
-        list.add("Name", this.nameField);
-        list.add("Population", this.popField);
-        list.add("Tolerance", this.toleranceField);
-        list.add("Happy Color", this.happyColorChooser);
-        list.add("Unhappy Color", this.unhappyColorChooser);
+        list.addLabelled("Name", this.nameField);
+        list.addLabelled("Population", this.popField);
+        list.addLabelled("Tolerance", this.toleranceField);
+        list.addLabelled("Happy Color", this.happyColorChooser);
+        list.addLabelled("Unhappy Color", this.unhappyColorChooser);
 
         return list;
     }
