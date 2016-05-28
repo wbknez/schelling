@@ -126,9 +126,13 @@ public class StateColorMap extends AbstractColorMap {
             throw new NullPointerException();
         }
 
-        // Bind only the happy color but both happy and unhappy states.
+        // Bind only the happy color but both happy and unhappy states if
+        // necessary.
         this.addMapping(group.getHappyStateMask(), group.getHappyColor());
-        this.addMapping(group.getUnhappyStateMask(), group.getHappyColor());
+
+        final Color unhappyColor = showUnhappyAgents ? group.getUnhappyColor()
+                                   : group.getHappyColor();
+        this.addMapping(group.getUnhappyStateMask(), unhappyColor);
     }
 
     /**
