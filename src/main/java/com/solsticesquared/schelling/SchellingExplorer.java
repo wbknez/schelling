@@ -328,8 +328,32 @@ public /* strictfp */ class SchellingExplorer extends SimState {
         return this.computeCache.get();
     }
 
+    /**
+     * Returns the list of currently available cells that are vacant (do not
+     * contain an agent).
+     *
+     * @return The list of empty cells.
+     */
     public ArrayList<MutableInt2D> getEmptyCells() {
         return this.emptyCells;
+    }
+
+    /**
+     * Returns the group located at the specified index.
+     *
+     * @param index
+     *        The location to use.
+     * @return The group at an index.
+     * @throws IndexOutOfBoundsException
+     *         If {@code index} is less than zero or greater than or equal to
+     *         the number of groups in this simulation.
+     */
+    public Group getGroup(final int index) {
+        if(index < 0 || index >= this.groups.size()) {
+            throw new IndexOutOfBoundsException(index + " is out of bounds!");
+        }
+
+        return this.groups.get(index);
     }
 
     /**
