@@ -32,6 +32,8 @@ repositories {
 
 dependencies {
     compile libraries.mason
+    compile libraries.jfChart
+    compile libraries.iText
 
     testCompile libraries.hamcrest
     testCompile libraries.junit
