@@ -19,6 +19,7 @@ package com.solsticesquared.schelling.ui;
 import com.solsticesquared.schelling.Agent;
 import com.solsticesquared.schelling.Agent.HappinessState;
 import com.solsticesquared.schelling.ComputeCache;
+import com.solsticesquared.schelling.Group;
 import com.solsticesquared.schelling.Ruleset;
 import com.solsticesquared.schelling.SchellingExplorer;
 import com.solsticesquared.schelling.SchellingExplorer.Constants;
@@ -50,6 +51,12 @@ public final class StatisticsUtils {
         return group0 != group1;
     }
 
+    public static double[] computeUnhappyAgents(final SchellingExplorer model) {
+        final double results[] = new double[2];
+        computeUnhappyAgents(model, results);
+        return results;
+    }
+
     /**
      * Computes the percentage of unhappy agents currently in the specified
      * model.
@@ -59,21 +66,35 @@ public final class StatisticsUtils {
      * @throws NullPointerException
      *         If either {@code model} is {@code null}.
      */
-    public static double computeUnhappyAgents(final SchellingExplorer model) {
+    public static void computeUnhappyAgents(final SchellingExplorer model,
+                                            final double[] results) {
         if(model == null) {
             throw new NullPointerException();
+        }
+
+        if(results.length != 2) {
+            throw new IllegalArgumentException("results array must have a " +
+                                               "size of 2!");
         }
 
         // The queue of unhappy agents.
         final ArrayList<Agent> unhappyAgents =
                 model.getMovementList();
+        // The group to decide divisions.
+        final Group firstGroup = model.getGroup(0);
 
-        int numUnhappy = 0;
+        results[0] = 0.0d;
+        results[1]  = 0.0d;
 
         for(final Agent agent : unhappyAgents) {
             // Screen for "happy" agents.
             if(agent.getState() != HappinessState.Happy) {
-                numUnhappy++;
+                if(agent.getGroup() == firstGroup) {
+                    results[0] += 1;
+                }
+                else {
+                    results[1] += 1;
+                }
             }
         }
 
@@ -81,7 +102,9 @@ public final class StatisticsUtils {
         final int totalAgents = (model.getSimulationSpace().getWidth() *
                                  model.getSimulationSpace().getHeight()) -
                                 model.getEmptyCells().size();
-        return (numUnhappy / (double)(totalAgents)) * 100.0d;
+
+        results[0] = (results[0] / (double)(totalAgents)) * 100.0d;
+        results[1] = (results[1] / (double)(totalAgents)) * 100.0d;
     }
 
     /**
