@@ -96,6 +96,8 @@ public class SchellingExplorerConsole extends Console {
         final LabelledList miscellaneous = UiUtils.createLabelledList();
         miscellaneous.addLabelled("Empty Color", guiState.getEmptyColor());
         miscellaneous.addLabelled("Show Unhappy", guiState.getShowUnhappy());
+        miscellaneous.addLabelled("Track Statistics",
+                                  guiState.getTrackStatistics());
 
         // Miscellaneous group.
         thirdBox.add(new JLabel("Miscellaneous", JLabel.LEFT));
