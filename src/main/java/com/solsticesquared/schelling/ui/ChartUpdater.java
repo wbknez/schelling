@@ -19,7 +19,7 @@ package com.solsticesquared.schelling.ui;
 import sim.engine.SimState;
 
 /**
- * Represents a mechanism for updating a {@link DisplayChart} with new values
+ * Represents a mechanism for updating a {@link ChartDisplay} with new values
  * computed a (running) simulation.
  */
 @FunctionalInterface
@@ -36,5 +36,5 @@ public interface ChartUpdater {
      * @throws NullPointerException
      *         If either {@code simState} or {@code chart} are {@code null}.
      */
-    void updateChart(final SimState simState, final DisplayChart chart);
+    void updateChart(final SimState simState, final ChartDisplay chart);
 }
