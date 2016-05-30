@@ -81,8 +81,11 @@ public /* strictfp */ class SchellingExplorer extends SimState {
         /** Denotes the order for an {@link UpdateTask}. */
         public static final int Update          = 2;
 
+        /** Denotes the order for chart updates. */
+        public static final int Charting        = 3;
+
         /** Denotes the order for a {@link StopConditionTask}. */
-        public static final int StopCondition   = 3;
+        public static final int StopCondition   = 4;
 
         /**
          * Constructor (private).
