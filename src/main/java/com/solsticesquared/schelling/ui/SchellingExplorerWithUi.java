@@ -274,18 +274,28 @@ public class SchellingExplorerWithUi extends GUIState {
     }
 
     /**
-     *
+     * Clears and (re)configures the charts used to display various
+     * statistics to the user.
      */
     private void setUpCharts() {
         // First, clear both charts.
         this.intensityChart.clear();
         this.unhappyChart.clear();
 
-        // Next, (re)set up the visualization of each chart.
+        // Create the results cache.
+        final double[] unhappyPercentage = new double[2];
+
+        // Next, obtain the group information for labelling purposes.
+        final Group firstGroup = ((SchellingExplorer)this.state).getGroup(0);
+        final Group secondGroup = ((SchellingExplorer)this.state).getGroup(1);
+
+        // Then, (re)set up the visualization of each chart.
         this.intensityChart.setLineColor(Color.red);
         this.intensityChart.setSeriesId("Interface Density");
-        this.unhappyChart.setLineColor(Color.blue);
-        this.unhappyChart.setSeriesId("Percent Unhappy");
+        this.unhappyChart.setLineColor(0, firstGroup.getHappyColor());
+        this.unhappyChart.setLineColor(1, secondGroup.getHappyColor());
+        this.unhappyChart.setSeriesIds(firstGroup.getName(),
+                                       secondGroup.getName());
 
         // Finally, rebind to the appropriate schedules if the user would
         // like these tracked.
@@ -300,15 +310,21 @@ public class SchellingExplorerWithUi extends GUIState {
 
             this.unhappyChart.start(this, (simState, chart) -> {
                 final SchellingExplorer model = (SchellingExplorer)simState;
-                final double unhappyPercentage =
-                        StatisticsUtils.computeUnhappyAgents(model);
+                StatisticsUtils.computeUnhappyAgents(model, unhappyPercentage);
 
-                chart.addDataPoint(model.schedule.getSteps(), unhappyPercentage);
+                chart.addDataPoint(0, model.schedule.getSteps(),
+                                   unhappyPercentage[0]);
+                chart.addDataPoint(1, model.schedule.getSteps(),
+                                   unhappyPercentage[1]);
             });
 
             // Refresh as necessary.
             this.scheduleImmediatelyAfter(
-                    simState -> this.chartFrame.repaint()
+                    simState -> {
+                        if(this.chartFrame.isVisible()) {
+                            this.chartFrame.repaint();
+                        }
+                    }
             );
         }
     }
@@ -372,8 +388,8 @@ public class SchellingExplorerWithUi extends GUIState {
     @Override
     public void start() {
         super.start();
-        this.setUpCharts();
         this.setUpGroups();
+        this.setUpCharts();
         this.setUpColorMap();
         this.setUpPortrayal();
     }
