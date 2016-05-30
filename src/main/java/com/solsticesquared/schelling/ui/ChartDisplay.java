@@ -16,10 +16,12 @@
 
 package com.solsticesquared.schelling.ui;
 
+import com.solsticesquared.schelling.SchellingExplorer;
 import com.solsticesquared.schelling.SchellingExplorer.TaskOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import sim.display.GUIState;
 import sim.util.media.chart.TimeSeriesChartGenerator;
 
@@ -37,13 +39,13 @@ public class ChartDisplay {
     private final TimeSeriesChartGenerator  chart;
 
     /** The data for the single series on the chart. */
-    private XYSeries                        chartData;
+    private final XYSeriesCollection        chartData;
 
     /** The rendering utility for the chart. */
     private final XYLineAndShapeRenderer    chartRenderer;
 
     /** The name, or id, of the primary series of the chart. */
-    private String                          seriesId;
+    private String[]                        seriesIds;
 
     /**
      * Constructor.
@@ -51,6 +53,7 @@ public class ChartDisplay {
     public ChartDisplay() {
 
         this.chart = new TimeSeriesChartGenerator();
+        this.chartData = new XYSeriesCollection();
         this.chartRenderer = new XYLineAndShapeRenderer();
 
         this.setUpUi();
@@ -66,36 +69,62 @@ public class ChartDisplay {
      *        The data value to use.
      */
     public void addDataPoint(final double timeValue, final double dataValue) {
-        this.addDataPoint(timeValue, dataValue, true);
+        this.addDataPoint(0, timeValue, dataValue, true);
     }
 
     /**
      * Adds the specified data value associated with the specified time value
-     * to this chart and notifies the user interface components after doing
-     * so if specified.
+     * to the specified series shown in this chart and notifies the user
+     * interface components after doing so.
      *
+     * @param series
+     *        The index of the series to modify.
+     * @param timeValue
+     *        The time value to use.
+     * @param dataValue
+     *        The data value to use.
+     */
+    public void addDataPoint(final int series, final double timeValue,
+                             final double dataValue) {
+        this.addDataPoint(series, timeValue, dataValue, true);
+    }
+
+    /**
+     * Adds the specified data value associated with the specified time value
+     * to the specified series shown in this chart and notifies the user
+     * interface components after doing so if specified.
+     *
+     * @param series
+     *        The index of the series to modify.
      * @param timeValue
      *        The time value to use.
      * @param dataValue
      *        The data value to use.
      * @param notify
      *        Whether or not to notify the user interface of chart updates.
+     * @throws IllegalStateException
+     *         If {@code series} is less than zero or greater than or equal
+     *         to the total number of series contained by this chart.
      */
-    public void addDataPoint(final double timeValue, final double dataValue,
-                             final boolean notify) {
-        if(this.chartData == null) {
-            throw new IllegalStateException("the chart has not been " +
-                                            "initialized correctly!");
+    public void addDataPoint(final int series, final double timeValue,
+                             final double dataValue, final boolean notify) {
+        if(series < 0 || series >= this.chartData.getSeriesCount()) {
+            throw new IndexOutOfBoundsException("series index: " + series + "" +
+                                                " - is out of bounds!");
         }
 
-        this.chartData.add(timeValue, dataValue, notify);
+        final XYSeries xySeries = this.chartData.getSeries(series);
+        xySeries.add(timeValue, dataValue, notify);
     }
 
     /**
-     * Removes all series associated with this chart.
+     * Removes all series associated with this chart and clears all
+     * visualization customizations stored in the renderer as well.
      */
     public void clear() {
-        this.chart.clearAllSeries();
+        this.chartData.removeAllSeries();
+        this.chartRenderer.clearSeriesPaints(false);
+        this.chartRenderer.clearSeriesStrokes(false);
     }
 
     /**
@@ -103,26 +132,36 @@ public class ChartDisplay {
      *
      * @param chart
      *        The chart to create the series for.
-     * @return A new series for a chart.
      * @throws NullPointerException
      *         If {@code chart} is {@code null}.
      */
-    private XYSeries createSeries(final TimeSeriesChartGenerator chart) {
+    private void createSeries(final TimeSeriesChartGenerator chart,
+                              final int reserveSize) {
         if(chart == null) {
             throw new NullPointerException();
+        }
+
+        if(reserveSize < 0) {
+            throw new IllegalArgumentException("the number of elements to " +
+                                               "reserve must be positive!");
         }
 
         // Clear the chart completely.
         chart.removeAllSeries();
 
-        // (Re)Create the series.
-        // If the series name or identifier does not exist, use the title.
-        final String uniqueId = this.seriesId != null ?
-                                this.seriesId : chart.getTitle();
-        final XYSeries xySeries = new XYSeries(uniqueId, false);
+        // (Re)Create each requested series using the ids.
+        for(int i = 0; i < this.seriesIds.length; i++) {
+            final XYSeries xySeries =
+                    new FixedSizeXYSeries(this.seriesIds[i], false, true,
+                                          reserveSize);
+            this.chartData.addSeries(xySeries);
 
-        chart.addSeries(xySeries, null);
-        return xySeries;
+            // Fix in the renderer.
+            // Lines only.
+            this.chartRenderer.setSeriesLinesVisible(i, true);
+            this.chartRenderer.setSeriesShapesVisible(i, false);
+            this.chartRenderer.setSeriesVisible(i, true);
+        }
     }
 
     /**
@@ -166,6 +205,30 @@ public class ChartDisplay {
     }
 
     /**
+     * Sets the line color to use for the specified series shown in this chart.
+     *
+     * @param series
+     *        The series to set the stroke for.
+     * @param color
+     *        The color to use.
+     * @throws IllegalArgumentException
+     *         If {@code series} is less than zero.
+     * @throws NullPointerException
+     *         If {@code color} is {@code null}.
+     */
+    public void setLineColor(final int series, final Color color) {
+        if(color == null) {
+            throw new NullPointerException();
+        }
+
+        if(series < 0) {
+            throw new IllegalArgumentException("series id must be positive!");
+        }
+
+        this.chartRenderer.setSeriesPaint(series, color);
+    }
+
+    /**
      * Sets the metadata of this chart - the title, the x-axis label, and the
      * y-axis label - to the specified values.
      *
@@ -203,8 +266,7 @@ public class ChartDisplay {
      * specified id.
      *
      * <p>
-     *     Since there is no legend to display (only one series per chart,
-     *     currently) this is of purely syntactic value only.
+     *     This corresponds to the name shown on the legend.
      * </p>
      *
      * @param seriesId
@@ -217,7 +279,28 @@ public class ChartDisplay {
             throw new NullPointerException();
         }
 
-        this.seriesId = seriesId;
+        this.seriesIds = new String[]{seriesId};
+    }
+
+    /**
+     * Sets the name, or id, of the variable number of series shown with this
+     * chart to the specified ids.
+     *
+     * <p>
+     *     This corresponds to the name(s) shown on the legend for each series.
+     * </p>
+     *
+     * @param seriesIds
+     *        The variable-length list of ids to use.
+     * @throws NullPointerException
+     *         If {@code seriesIds} is {@code null}.
+     */
+    public void setSeriesIds(final String ... seriesIds) {
+        if(seriesIds == null) {
+            throw new NullPointerException();
+        }
+
+        this.seriesIds = seriesIds;
     }
 
     /**
@@ -237,16 +320,36 @@ public class ChartDisplay {
     }
 
     /**
+     * Sets the stroke to use for the specified series shown in this chart.
+     *
+     * @param series
+     *        The series to set the stroke for.
+     * @param stroke
+     *        The stroke to use.
+     * @throws IllegalArgumentException
+     *         If {@code series} is less than zero.
+     * @throws NullPointerException
+     *         If {@code stroke} is {@code null}.
+     */
+    public void setSeriesStroke(final int series, final Stroke stroke) {
+        if(stroke == null) {
+            throw new NullPointerException();
+        }
+
+        if(series < 0) {
+            throw new IllegalArgumentException("series id must be positive!");
+        }
+
+        this.chartRenderer.setSeriesStroke(series, stroke);
+    }
+
+    /**
      * Configures the (underlying) chart and renderer.
      */
     private void setUpUi() {
-        // Lines only.
-        this.chartRenderer.setSeriesLinesVisible(0, true);
-        this.chartRenderer.setSeriesShapesVisible(0, false);
-        this.chartRenderer.setSeriesVisible(0, true);
-
         // Bind the renderer to the chart.
         final XYPlot plot = this.chart.getChart().getXYPlot();
+        plot.setDataset(this.chartData);
         plot.setRenderer(this.chartRenderer);
     }
 
@@ -271,8 +374,13 @@ public class ChartDisplay {
             throw new NullPointerException();
         }
 
+        // Determine how many elements to reserve.
+        final int reserveSize =
+                ((SchellingExplorer)guiState.state).getParameters()
+                                                   .getMaximumSteps();
+
         // (Re)Create the chart data.
-        this.chartData = this.createSeries(this.chart);
+        this.createSeries(this.chart, reserveSize);
 
         // (Re)Register for updates on the model thread.
         guiState.state.schedule.scheduleRepeating(0.0d, TaskOrder.Charting,
