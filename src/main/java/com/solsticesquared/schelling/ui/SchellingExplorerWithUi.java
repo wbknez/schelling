@@ -28,6 +28,8 @@ import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.util.gui.PropertyField;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import java.awt.Color;
 
 /**
  * Represents a user interface for an agent-based Schelling segregation
@@ -48,6 +50,15 @@ public class SchellingExplorerWithUi extends GUIState {
      */
     private final FastValueGridPortrayal2D agentPortrayal;
 
+    /** The user interface window that contains the statistics charts. */
+    private final JFrame                    chartFrame;
+
+    /**
+     * The {@link JTabbedPane} that contains all the statistics charts, each
+     * w ith its own tab.
+     */
+    private final JTabbedPane               chartPane;
+
     /** The rendering surface of the simulation space (grid). */
     private final Display2D                 display2d;
 
@@ -56,6 +67,9 @@ public class SchellingExplorerWithUi extends GUIState {
 
     /** The collection of user interface widgets for the first group. */
     private final GroupOptions              firstGroup;
+
+    /** The statistics chart that shows the interface density over time. */
+    private final ChartDisplay              intensityChart;
 
     /** The collection of user interface widgets for the second group. */
     private final GroupOptions              secondGroup;
@@ -73,6 +87,18 @@ public class SchellingExplorerWithUi extends GUIState {
     private final JFrame                    simulFrame;
 
     /**
+     * Allows the user to determine whether or not statistics for a
+     * simulation should be tracked.
+     */
+    private final PropertyField             trackStatistics;
+
+    /**
+     * The statistics chart that shows the percentage of unhappy agents over
+     * time.
+     */
+    private final ChartDisplay              unhappyChart;
+
+    /**
      * Constructor.
      *
      * @param simState
@@ -82,22 +108,32 @@ public class SchellingExplorerWithUi extends GUIState {
         super(simState);
 
         this.agentPortrayal = new FastValueGridPortrayal2D();
+        this.chartFrame = new JFrame();
+        this.chartPane = new JTabbedPane();
         this.display2d = new Display2D(500, 500, this);
         this.emptyColor = new ChooseColorButton(Colors.EmptySpace);
         this.firstGroup =
                 new GroupOptions(((SchellingExplorer)simState).getGroup(0));
+        this.intensityChart = new ChartDisplay();
         this.secondGroup =
                 new GroupOptions(((SchellingExplorer)simState).getGroup(1));
         this.showUnhappy = new PropertyField(null, "true", true, null,
                                              PropertyField.SHOW_CHECKBOX);
         this.stateColorMap = new StateColorMap();
         this.simulFrame = this.display2d.createFrame();
+        this.unhappyChart = new ChartDisplay();
 
         // Fix tooltips.
         this.emptyColor.setToolTipText("Choose a color for the empty cells.");
         this.showUnhappy.setToolTipText("Determine whether or not to show " +
                                         "\"unhappy\" agents as a different " +
                                         "color.");
+        this.trackStatistics = new PropertyField(null, "true", true, null,
+                                                 PropertyField.SHOW_CHECKBOX);
+        this.trackStatistics.setToolTipText("Determine whether or not to " +
+                                            "track statistics for a " +
+                                            "simulation.  Uncheck this to " +
+                                            "improve performance.");
     }
 
     /**
@@ -152,6 +188,21 @@ public class SchellingExplorerWithUi extends GUIState {
         return this.simulFrame;
     }
 
+    /**
+     * Returns the widget that allows the user to determine whether or not
+     * statistics (e.g. interface density, percentage of agents that are
+     * "unhappy") should be tracked.
+     *
+     * <p>
+     *     Disabling this will improve performance.
+     * </p>
+     *
+     * @return The widget that controls whether or not to track statistics.
+     */
+    public PropertyField getTrackStatistics() {
+        return this.trackStatistics;
+    }
+
     @Override
     public Object getSimulationInspectedObject() {
         final SchellingExplorer model = (SchellingExplorer)this.state;
@@ -168,9 +219,27 @@ public class SchellingExplorerWithUi extends GUIState {
 
         // Set the title properly.
         this.simulFrame.setTitle("Schelling Explorer - Simulation");
+        this.chartFrame.setTitle("Schelling Explorer - Statistics");
+
+        // Bind the charts.
+        this.intensityChart.init(this.chartPane, "Interface Density");
+        this.unhappyChart.init(this.chartPane, "Unhappy Agents");
+
+        // Bind the chart pane(s).
+        this.chartFrame.add(this.chartPane);
+        this.chartFrame.pack();
+
+        // Set the metadata in-case the user views the charts before any data
+        // is available.
+        this.intensityChart.setMetaData("Interface Density over Time",
+                                        "Time (steps)", "Interface Density");
+        this.unhappyChart.setMetaData("Percent of Unhappy Agents over Time",
+                                      "Time (steps)", " Percent (%) of " +
+                                                      "Unhappy Agents");
 
         // Bind the controller.
         controller.registerFrame(this.simulFrame);
+        controller.registerFrame(this.chartFrame);
 
         // Bind the portrayal.
         this.display2d.attach(this.agentPortrayal, "Grid Portrayal");
@@ -182,6 +251,7 @@ public class SchellingExplorerWithUi extends GUIState {
     @Override
     public void load(final SimState simState) {
         super.load(simState);
+        this.setUpCharts();
         this.setUpColorMap();
         this.setUpPortrayal();
     }
@@ -196,6 +266,50 @@ public class SchellingExplorerWithUi extends GUIState {
         // this method is called on the Event Dispatch Thread.
         if(this.simulFrame != null) {
             this.simulFrame.dispose();
+        }
+
+        if(this.chartFrame != null) {
+            this.chartFrame.dispose();
+        }
+    }
+
+    /**
+     *
+     */
+    private void setUpCharts() {
+        // First, clear both charts.
+        this.intensityChart.clear();
+        this.unhappyChart.clear();
+
+        // Next, (re)set up the visualization of each chart.
+        this.intensityChart.setLineColor(Color.red);
+        this.intensityChart.setSeriesId("Interface Density");
+        this.unhappyChart.setLineColor(Color.blue);
+        this.unhappyChart.setSeriesId("Percent Unhappy");
+
+        // Finally, rebind to the appropriate schedules if the user would
+        // like these tracked.
+        if(Boolean.parseBoolean(this.trackStatistics.getValue())) {
+            this.intensityChart.start(this, (simState, chart) -> {
+                final SchellingExplorer model = (SchellingExplorer)simState;
+                final double interfaceDensity =
+                        StatisticsUtils.computeInterfaceDensity(model);
+
+                chart.addDataPoint(model.schedule.getSteps(), interfaceDensity);
+            });
+
+            this.unhappyChart.start(this, (simState, chart) -> {
+                final SchellingExplorer model = (SchellingExplorer)simState;
+                final double unhappyPercentage =
+                        StatisticsUtils.computeUnhappyAgents(model);
+
+                chart.addDataPoint(model.schedule.getSteps(), unhappyPercentage);
+            });
+
+            // Refresh as necessary.
+            this.scheduleImmediatelyAfter(
+                    simState -> this.chartFrame.repaint()
+            );
         }
     }
 
@@ -258,6 +372,7 @@ public class SchellingExplorerWithUi extends GUIState {
     @Override
     public void start() {
         super.start();
+        this.setUpCharts();
         this.setUpGroups();
         this.setUpColorMap();
         this.setUpPortrayal();
