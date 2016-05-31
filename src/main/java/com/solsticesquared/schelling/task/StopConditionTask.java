@@ -16,6 +16,7 @@
 
 package com.solsticesquared.schelling.task;
 
+import com.solsticesquared.schelling.Agent.HappinessState;
 import com.solsticesquared.schelling.SchellingExplorer;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -55,7 +56,9 @@ public class StopConditionTask implements Steppable {
                 this.internalCounter >= model.getParameters().getMaximumSteps();
         final boolean shouldStop =
                 model.getParameters().getStopOnEquilibrium()
-                  && model.getMovementList().isEmpty();
+                  && model.getMovementList().stream().filter(
+                        s -> s.getState() == HappinessState.Unhappy
+                ).count() == 0;
 
         // Compare to the maximum number of steps allowed.
         if(mustStop || shouldStop) {
