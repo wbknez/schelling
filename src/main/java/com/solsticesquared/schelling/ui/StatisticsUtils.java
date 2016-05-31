@@ -99,12 +99,10 @@ public final class StatisticsUtils {
         }
 
         // Compute how many total agents there are.
-        final int totalAgents = (model.getSimulationSpace().getWidth() *
-                                 model.getSimulationSpace().getHeight()) -
-                                model.getEmptyCells().size();
+        final int[] totalAgents = model.getTotalAgents();
 
-        results[0] = (results[0] / (double)(totalAgents)) * 100.0d;
-        results[1] = (results[1] / (double)(totalAgents)) * 100.0d;
+        results[0] = (results[0] / (double)(totalAgents[0])) * 100.0d;
+        results[1] = (results[1] / (double)(totalAgents[1])) * 100.0d;
     }
 
     /**

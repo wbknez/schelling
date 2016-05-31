@@ -163,6 +163,19 @@ public /* strictfp */ class SchellingExplorer extends SimState {
     private IntGrid2D                       simulSpace;
 
     /**
+     * Contains the total number of agents allocated per group per simulation.
+     *
+     * <p>
+     *     This is, admittedly, a minor hack to sidestep a design flaw in the
+     *     project.  Namely, that there was no initial need to keep track of
+     *     this information so it was simply omitted.  As it stands, the
+     *     simulation updates this value during the start-up procedure before
+     *     every run.
+     * </p>
+     */
+    private int[]                           totalAgents;
+
+    /**
      * Constructor.
      *
      * @param seed
@@ -271,6 +284,9 @@ public /* strictfp */ class SchellingExplorer extends SimState {
      *  </ul>
      */
     private void collectAgentsAndEmptyCells() {
+        // Reset the number of total agents.
+        this.totalAgents = new int[this.groups.size()];
+
         for(int i = 0; i < this.parameters.getWidth(); i++) {
             for(int j = 0; j < this.parameters.getHeight(); j++) {
                 final int currentValue = this.simulSpace.field[i][j];
@@ -290,6 +306,10 @@ public /* strictfp */ class SchellingExplorer extends SimState {
                     // Set the grid value to the "real" group indicator.
                     // Use "unhappy" because the simulation is uncertain.
                     this.simulSpace.field[i][j] = group.getHappyStateMask();
+
+                    // Keep track of the number of agents allocated to the
+                    // specified group.
+                    this.totalAgents[currentValue] += 1;
                 }
             }
         }
@@ -426,6 +446,16 @@ public /* strictfp */ class SchellingExplorer extends SimState {
      */
     public IntGrid2D getSimulationSpace() {
         return this.simulSpace;
+    }
+
+    /**
+     * Returns an array containing the total number of agents allocated per
+     * group, in order.
+     *
+     * @return The total number of agents per group.
+     */
+    public int[] getTotalAgents() {
+        return this.totalAgents;
     }
 
     /**
