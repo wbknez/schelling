@@ -1,7 +1,7 @@
 Schelling Explorer
 ================
 
-This project aims to explore several variations of Thomas Schelling's (1971)
+This project aims to explore several variations of Thomas Schelling's (1969-71)
 work on residential segregation.
 
 Features
@@ -34,23 +34,24 @@ The excellent simulation toolkit
 [MASON](http://cs.gmu.edu/~eclab/projects/mason/) is used to provide the
 agent based modeling facilities as well as most of the widgets that comprise
 the user interface.  Finally, this project requires
-[JFreeChart](http://www.jfree.org/jfreechart/)
+[JFreeChart](http://www.jfree.org/jfreechart/) with
  the [iText](http://itextpdf.com/) PDF library for charting.
 
 Please note that when building this project only MASON needs to be installed
-manually.
+manually.  This can be done using the requisite commands for [Maven](https://maven.apache.org/)
+or [Ivy](http://ant.apache.org/ivy/) depending on preference.
 
 Screenshots
 -----------
-An example of this project in action, exploring a typical New Mexican
-quandry: red or green?
+An example of this project in action is shown below and
+based on a typical New Mexican quandry: red or
+green?
 ![Running an example simulation.](screenshots/action_shot.png "Action shot!")
 
 License
 -------
 This project is released under the [Apache
-2.0](https://www.apache.org/licenses/LICENSE-2.0) license as specified in the
-[License.txt](License.txt).
+2.0](https://www.apache.org/licenses/LICENSE-2.0) license as specified in [License.txt](License.txt).
 
 References
 ----------
